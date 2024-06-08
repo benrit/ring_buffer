@@ -67,12 +67,15 @@ int main(void){
 
     ring_buffer_enqueue(&rb, 5);
     ring_buffer_enqueue(&rb, 2);
+    uint8_t data[] = {5, 2};
+
+    printf("%i queue and data are equal\n", ring_buffer_compare(&rb, data, 2));
+
     uint8_t temp = 0;
     ring_buffer_dequeue(&rb, &temp);
 
-    uint8_t data[] = {5, 2};
+    printf("%i queue and data are not equal\n", ring_buffer_compare(&rb, data, 2));
 
-    printf("%i", ring_buffer_compare(&rb, data, 2));
 
     return 0;
 }

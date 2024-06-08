@@ -51,6 +51,12 @@ uint32_t ring_buffer_peak(RingBuffer *rb, uint32_t *data){
 uint32_t ring_buffer_compare(RingBuffer *rb, const uint8_t *data, const uint32_t len){
 	uint32_t read = (rb->read + 1) % BUFFER_SIZE;
 	uint32_t i = len;
+    // check for buffer wrap around
+    uint32_t length = (rb->read <= rb->write ? rb->write : rb->write + BUFFER_SIZE) - rb->read;
+    // check if requested length is larger than buffer data
+    if(len > length){
+        return 0;
+    }
 
 	while(i){
 		if (rb->buffer[(read + i) % BUFFER_SIZE ] != data[i]) return 0;

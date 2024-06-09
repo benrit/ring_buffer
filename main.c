@@ -45,7 +45,7 @@ uint32_t ring_buffer_dequeue(RingBuffer *rb, buffer_type_t *data){
 }
 
 uint32_t ring_buffer_peak(RingBuffer *rb, uint32_t *data){
-	*data = rb->buffer[(rb->write - 1) % BUFFER_SIZE];
+	*data = rb->buffer[(rb->write - 1) & BUFFER_MOD];
 
 	return 1;
 }

@@ -2,11 +2,13 @@
 #include <stdio.h>
 
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE (1024)
+#define BUFFER_MOD (BUFFER_SIZE - 1)
 
+typedef uint8_t buffer_type_t;
 
 typedef struct {
-    uint8_t buffer[BUFFER_SIZE];
+    buffer_type_t buffer[BUFFER_SIZE];
     uint32_t read;
     uint32_t write;
 }RingBuffer;
@@ -17,8 +19,8 @@ void ring_buffer_init(RingBuffer *rb){
 	rb->read = 0;
 }
 
-uint32_t ring_buffer_enqueue(RingBuffer *rb, uint8_t data){
-    uint32_t temp = (rb->write + 1) % BUFFER_SIZE;
+uint32_t ring_buffer_enqueue(RingBuffer *rb, buffer_type_t data){
+    uint32_t temp = (rb->write + 1) & BUFFER_MOD;
     if (rb->read == rb->write){
         return 0;
     }
@@ -29,9 +31,9 @@ uint32_t ring_buffer_enqueue(RingBuffer *rb, uint8_t data){
     return 1;
 }
 
-uint32_t ring_buffer_dequeue(RingBuffer *rb, uint8_t *data){
+uint32_t ring_buffer_dequeue(RingBuffer *rb, buffer_type_t *data){
 
-    uint32_t temp = (rb->read + 1) % BUFFER_SIZE;
+    uint32_t temp = (rb->read + 1) & BUFFER_MOD;
 
     if (temp == rb->write){
         return 0;
@@ -48,8 +50,8 @@ uint32_t ring_buffer_peak(RingBuffer *rb, uint32_t *data){
 	return 1;
 }
 
-uint32_t ring_buffer_compare(RingBuffer *rb, const uint8_t *data, const uint32_t len){
-    uint32_t read = (rb->read + 1) % BUFFER_SIZE;
+uint32_t ring_buffer_compare(RingBuffer *rb, const buffer_type_t *data, const uint32_t len){
+    uint32_t read = (rb->read + 1) & BUFFER_MOD;
     uint32_t i = len;
     // check for buffer wrap around
     uint32_t length = (rb->read <= rb->write ? rb->write : rb->write + BUFFER_SIZE) - rb->read;
@@ -59,7 +61,7 @@ uint32_t ring_buffer_compare(RingBuffer *rb, const uint8_t *data, const uint32_t
     }
 
     while(i){
-        if (rb->buffer[(read + i) % BUFFER_SIZE ] != data[i]) return 0;
+        if (rb->buffer[(read + i) & BUFFER_MOD ] != data[i]) return 0;
         i--;
     }
     return 1;
